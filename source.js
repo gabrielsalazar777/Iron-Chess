@@ -1,4 +1,5 @@
 let darkPawn1 = document.createElement("img");
+darkPawn1.className = "pawn";
 darkPawn1.id = "dark-pawn-1";
 darkPawn1.src = "/images/dark_pawn.svg";
 darkPawn1.setAttribute("draggable", true);
@@ -49,7 +50,10 @@ let darkKing = document.createElement("img");
 darkKing.src = "images/dark_king.svg";
 
 let lightPawn1 = document.createElement("img");
+lightPawn1.className = "pawn";
+lightPawn1.id = "light-pawn-1";
 lightPawn1.src = "/images/light_pawn.svg";
+lightPawn1.setAttribute("draggable", true);
 
 let lightPawn2 = document.createElement("img");
 lightPawn2.src = "/images/light_pawn.svg";
@@ -116,16 +120,28 @@ class Piece {
 }
 
 let boardArray = [
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
-  [{}, {}, {}, {}, {}, {}, {}, {}],
+  ["A8", "B8", "C8", "D8", "E8", "F8", "G8", "H8"],
+  ["A7", "B7", "C7", "D7", "E7", "F7", "G7", "H7"],
+  ["A6", "B6", "C6", "D6", "E6", "F6", "G6", "H6"],
+  ["A5", "B5", "C5", "D5", "E5", "F5", "G5", "H5"],
+  ["A4", "B4", "C4", "D4", "E4", "F4", "G4", "H4"],
+  ["A3", "B3", "C3", "D3", "E3", "F3", "G3", "H3"],
+  ["A2", "B2", "C2", "D2", "E2", "F2", "G2", "H2"],
+  ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
 ];
 
+let pieceArray = [
+  ["T", "T", "T", "T", "T", "T", "T", "T"],
+  ["T", "T", "T", "T", "T", "T", "T", "T"],
+  ["0", "0", "0", "0", "0", "0", "0", "0"],
+  ["0", "0", "0", "0", "0", "0", "0", "0"],
+  ["0", "0", "0", "0", "0", "0", "0", "0"],
+  ["0", "0", "0", "0", "0", "0", "0", "0"],
+  ["T", "T", "T", "T", "T", "T", "T", "T"],
+  ["T", "T", "T", "T", "T", "T", "T", "T"],
+];
+
+//BOARD INIT HERE!
 let dPawn1 = new Piece();
 function initBoard() {
   dPawn1.classSetPiece("A7", darkPawn1, "pawn");
@@ -164,6 +180,90 @@ function initBoard() {
 }
 initBoard();
 
+function isLegalMove(type, id, origin, parentDestId, destination) {
+  let yCoordO;
+  let xCoordO;
+  let yCoordD;
+  let xCoordD;
+
+  boardArray.forEach((elem, i) => {
+    elem.forEach((sq, j) => {
+      if (sq === origin) {
+        yCoordO = i;
+        xCoordO = j;
+      }
+    });
+  });
+
+  boardArray.forEach((elem, i) => {
+    elem.forEach((sq, j) => {
+      if (sq === destination) {
+        yCoordD = i;
+        xCoordD = j;
+      }
+    });
+  });
+
+  console.log("Origin info: ", type, yCoordO, xCoordO, origin);
+  console.log("Destination info: ", type, yCoordD, xCoordD, destination);
+  console.log("id: ", id);
+  switch (type) {
+    case "pawn":
+      //if dark moving towards light
+      if (id.includes("dark")) {
+        //if moving back or sideways
+        if (yCoordO > yCoordD || xCoordD != xCoordO) {
+          return 0;
+        }
+        //if moving two squares not on init, or moving 3+ squares
+        if (
+          (yCoordO != 1 && yCoordD - yCoordO >= 2) ||
+          (yCoordO === 1 && yCoordD - yCoordO >= 3)
+        ) {
+          return 0;
+        }
+        //if path is not empty
+        if (yCoordD > yCoordO) {
+          console.log("Moving contains: ", pieceArray[yCoordO + 1][xCoordO]);
+          for (i = 1; i <= yCoordD - yCoordO; i++) {
+            console.log("trying");
+            if (pieceArray[yCoordO + i][xCoordO] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      //if light moving towards dark
+      if (id.includes("light")) {
+        //if moving back or sideways
+        if (yCoordO < yCoordD || xCoordD != xCoordO) {
+          return 0;
+        }
+        //if moving two squares not on init, or moving 3+ squares
+        if (
+          (yCoordO != 6 && yCoordO - yCoordD >= 2) ||
+          (yCoordO === 6 && yCoordO - yCoordD >= 3)
+        ) {
+          return 0;
+        }
+        //if path is not empty
+        if (yCoordD < yCoordO) {
+          console.log("Moving contains: ", pieceArray[yCoordO - 1][xCoordO]);
+          for (i = 1; i <= yCoordO - yCoordD; i++) {
+            console.log("trying");
+            if (pieceArray[yCoordO - i][xCoordO] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      pieceArray[yCoordO][xCoordO] = "0";
+      pieceArray[yCoordD][xCoordD] = "T";
+      console.log(pieceArray);
+      return 1;
+  }
+}
+
 function testFunction(e) {
   console.log("something clicked: ", e);
 }
@@ -197,7 +297,27 @@ board.forEach((elem) => {
 
   elem.addEventListener("drop", (g) => {
     console.log("DROPPED:", g.target.id);
-    selectedPiece.parentNode.removeChild(selectedPiece);
-    g.target.appendChild(selectedPiece);
+    if (g.target.tagName !== "IMG") {
+      if (
+        isLegalMove(
+          selectedPiece.className,
+          selectedPiece.id,
+          selectedPiece.parentNode.id,
+          g.target.parentNode.id,
+          g.target.id
+        )
+      ) {
+        selectedPiece.parentNode.removeChild(selectedPiece);
+        g.target.appendChild(selectedPiece);
+      }
+    } else {
+      isLegalMove(
+        selectedPiece.className,
+        selectedPiece.id,
+        selectedPiece.parentNode.id,
+        g.target.parentNode.id,
+        g.target.id
+      );
+    }
   });
 });
