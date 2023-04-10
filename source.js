@@ -98,11 +98,22 @@ function setPiece(square, piece) {
   document.getElementById(square).appendChild(piece);
 }
 
-function initBoard() {
-  //   let darkKing = document.createElement("img");
-  //   darkKing.src = "/images/dark_king.svg";
-  //   document.getElementById("D8").appendChild(darkKing);
+// class Piece {
+//     constructor() {
+//         this.square;
+//         this.piece;
+//     }
 
+//     classSetPiece(square, piece) {
+//         document.getElementById(square).appendChild(piece);
+//         this.square = square;
+//         this.piece = piece;
+//     }
+// }
+
+function initBoard() {
+  // let dPawn1 = new Piece;
+  // dPawn1.classSetPiece('A7', darkPawn1);
   setPiece("A7", darkPawn1);
   setPiece("B7", darkPawn2);
   setPiece("C7", darkPawn3);
