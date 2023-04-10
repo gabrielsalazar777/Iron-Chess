@@ -1,5 +1,7 @@
 let darkPawn1 = document.createElement("img");
+darkPawn1.id = "dark-pawn-1";
 darkPawn1.src = "/images/dark_pawn.svg";
+darkPawn1.setAttribute("draggable", true);
 
 let darkPawn2 = document.createElement("img");
 darkPawn2.src = "/images/dark_pawn.svg";
@@ -98,23 +100,36 @@ function setPiece(square, piece) {
   document.getElementById(square).appendChild(piece);
 }
 
-// class Piece {
-//     constructor() {
-//         this.square;
-//         this.piece;
-//     }
+class Piece {
+  constructor() {
+    this.square;
+    this.piece;
+    this.pieceType;
+  }
 
-//     classSetPiece(square, piece) {
-//         document.getElementById(square).appendChild(piece);
-//         this.square = square;
-//         this.piece = piece;
-//     }
-// }
+  classSetPiece(square, piece, pieceType) {
+    document.getElementById(square).appendChild(piece);
+    this.square = square;
+    this.piece = piece;
+    this.pieceType = pieceType;
+  }
+}
 
+let boardArray = [
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+  [{}, {}, {}, {}, {}, {}, {}, {}],
+];
+
+let dPawn1 = new Piece();
 function initBoard() {
-  // let dPawn1 = new Piece;
-  // dPawn1.classSetPiece('A7', darkPawn1);
-  setPiece("A7", darkPawn1);
+  dPawn1.classSetPiece("A7", darkPawn1, "pawn");
+  // setPiece("A7", darkPawn1);
   setPiece("B7", darkPawn2);
   setPiece("C7", darkPawn3);
   setPiece("D7", darkPawn4);
@@ -147,5 +162,42 @@ function initBoard() {
   setPiece("D1", lightQueen);
   setPiece("E1", lightKing);
 }
-
 initBoard();
+
+function testFunction(e) {
+  console.log("something clicked: ", e);
+}
+
+// let board = document.getElementById('chess-board');
+let board = document.querySelectorAll(".row > div");
+let images = document.querySelectorAll("img");
+let selectedPiece;
+
+board.forEach((elem) => {
+  elem.addEventListener("mousedown", (e) => {
+    // board.addEventListener("click", (e) => {
+    // document.addEventListener('click', (e) => {
+    testFunction(e.target.id);
+    if (e.target.tagName === "IMG") {
+      console.log(
+        "piece selected: ",
+        e.target.tagName,
+        e.target.id,
+        " in ",
+        e.target.parentNode.id
+      );
+      selectedPiece = e.target;
+    } else {
+      selectedPiece = null;
+    }
+  });
+  elem.addEventListener("dragover", (f) => {
+    f.preventDefault();
+  });
+
+  elem.addEventListener("drop", (g) => {
+    console.log("DROPPED:", g.target.id);
+    selectedPiece.parentNode.removeChild(selectedPiece);
+    g.target.appendChild(selectedPiece);
+  });
+});
