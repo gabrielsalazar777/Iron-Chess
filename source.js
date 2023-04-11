@@ -555,6 +555,17 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
         }
       }
       break;
+    case "king":
+      //if moving 2 in any direction
+      if (Math.abs(yCoordD - yCoordO) > 1 || Math.abs(xCoordD - xCoordO) > 1) {
+        return 0;
+      }
+      //if not moving horizontal, vertical, or diagonal
+      if ((Math.abs(yCoordD - yCoordO)/Math.abs(xCoordD - xCoordO) != 1)
+      && (Math.abs(Math.abs(yCoordD - yCoordO) - Math.abs(xCoordD - xCoordO)) != 1)) {
+        return 0;
+      }
+      break;
   }
 
   //friendly fire
