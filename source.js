@@ -241,14 +241,29 @@ function initBoard() {
 }
 initBoard();
 
-//check if piece is making a legal move
-function isLegalMove(type, id, origin, parentDestId, destination) {
-  let yCoordO;
-  let xCoordO;
-  let yCoordD;
-  let xCoordD;
+function handleMove(type, id, origin, destPieceId, destination) {
+  if (
+    isLegalMove(type, id, origin, destPieceId, destination) &&
+    isCheck(id, origin, destination, lightKingParentId, darkKingParentId)
+  ) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
 
-  //convert div square ID to array coords from boardArray
+let yCoordO, xCoordO, yCoordD, xCoordD;
+let lightKingParentId = lightKing.parentNode.id;
+let darkKingParentId = darkKing.parentNode.id;
+let lightKingX, lightKingY, darkKingX, darkKingY;
+// console.log(
+//   "Light king is at: ",
+//   lightKingParentId,
+//   " Dark king is at: ",
+//   darkKingParentId
+// );
+
+function coordinateConversion(origin, destination) {
   boardArray.forEach((elem, i) => {
     elem.forEach((sq, j) => {
       if (sq === origin) {
@@ -266,6 +281,133 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
       }
     });
   });
+}
+
+function isCheck(id, origin, destination, lKingId, dKingId) {
+  // coordinateConversion(lKingId, dKingId);
+  // lightKingY = yCoordO;
+  // lightKingX = xCoordO;
+  // darkKingY = yCoordD;
+  // darkKingX = xCoordD;
+  let legalMove = true;
+  coordinateConversion(origin, destination);
+  currentImages = document.querySelectorAll("img");
+  let tempArray = JSON.parse(JSON.stringify(pieceArray));
+  pieceArray[yCoordO][xCoordO] = "0";
+  pieceArray[yCoordD][xCoordD] = "T";
+
+  if (id.includes("light")) {
+    currentImages.forEach((e) => {
+      if (e.id.includes("dark")) {
+        if (
+          isLegalMove(
+            e.className,
+            e.id,
+            e.parentNode.id,
+            "light-king",
+            lightKingParentId
+          )
+        ) {
+          console.log("is check failed1, illegal move");
+          console.log(
+            "className, id, parentNode ID, lightKingParentId: ",
+            e.className,
+            e.id,
+            e.parentNode.id,
+            lightKingParentId
+          );
+          pieceArray = tempArray;
+          legalMove = false;
+        }
+      }
+    });
+    if (!legalMove) {
+      legalMove = true;
+      return 0;
+    }
+  }
+  // if (id.includes("dark")) {
+  //   currentImages.forEach((e) => {
+  //     if (e.id.includes("light")) {
+  //       if (
+  //         isLegalMove(
+  //           e.className,
+  //           e.id,
+  //           e.parentNode.id,
+  //           "dark-king",
+  //           darkKingParentId
+  //         )
+  //       ) {
+  //         console.log("is check failed2, illegal move");
+  //         pieceArray = tempArray;
+  //         return 0;
+  //       }
+  //     }
+  //   });
+  // }
+  // pieceArray = tempArray;
+  // return 1;
+
+  if (id.includes("dark")) {
+    currentImages.forEach((e) => {
+      if (e.id.includes("light")) {
+        if (
+          isLegalMove(
+            e.className,
+            e.id,
+            e.parentNode.id,
+            "dark-king",
+            darkKingParentId
+          )
+        ) {
+          console.log("is check failed1, illegal move");
+          console.log(
+            "className, id, parentNode ID, darkKingKingParentId: ",
+            e.className,
+            e.id,
+            e.parentNode.id,
+            darkKingParentId
+          );
+          pieceArray = tempArray;
+          legalMove = false;
+        }
+      }
+    });
+    if (!legalMove) {
+      legalMove = true;
+      return 0;
+    }
+  }
+  return 1;
+}
+
+//check if piece is making a legal move
+function isLegalMove(type, id, origin, destPieceId, destination) {
+  // let yCoordO;
+  // let xCoordO;
+  // let yCoordD;
+  // let xCoordD;
+
+  //convert div square ID to array coords from boardArray
+  // boardArray.forEach((elem, i) => {
+  //   elem.forEach((sq, j) => {
+  //     if (sq === origin) {
+  //       yCoordO = i;
+  //       xCoordO = j;
+  //     }
+  //   });
+  // });
+
+  // boardArray.forEach((elem, i) => {
+  //   elem.forEach((sq, j) => {
+  //     if (sq === destination) {
+  //       yCoordD = i;
+  //       xCoordD = j;
+  //     }
+  //   });
+  // });
+
+  coordinateConversion(origin, destination);
 
   console.log("Origin info: ", type, id, yCoordO, xCoordO, origin);
   console.log("Destination info: ", type, yCoordD, xCoordD, destination);
@@ -283,9 +425,9 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
         if (
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordD - yCoordO === 1 &&
-          parentDestId.includes("light")
+          destPieceId.includes("light")
         ) {
-          console.log("parentDestId success: ", parentDestId);
+          console.log("destPieceId success: ", destPieceId);
           pieceArray[yCoordO][xCoordO] = "0";
           pieceArray[yCoordD][xCoordD] = "T";
           console.log(pieceArray);
@@ -296,7 +438,7 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordD - yCoordO === 1
         ) {
-          console.log("parentDestId fail: ", destination);
+          // console.log("destPieceId fail: ", destination);
           return 0;
         }
         //if moving two squares not on init, or moving 3+ squares
@@ -327,9 +469,9 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
         if (
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordO - yCoordD === 1 &&
-          parentDestId.includes("dark")
+          destPieceId.includes("dark")
         ) {
-          console.log("parentDestId success: ", destination);
+          console.log("destPieceId success: ", destination);
           pieceArray[yCoordO][xCoordO] = "0";
           pieceArray[yCoordD][xCoordD] = "T";
           console.log(pieceArray);
@@ -340,7 +482,7 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordO - yCoordD === 1
         ) {
-          console.log("parentDestId fail: ", parentDestId);
+          console.log("destPieceId fail: ", destPieceId);
           return 0;
         }
         //if moving two squares not on init, or moving 3+ squares
@@ -409,8 +551,8 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
       //friendly fire
       // maybe put this one bracket more outside
       // if (
-      //   (id.includes("light") && parentDestId.includes("light")) ||
-      //   (id.includes("dark") && parentDestId.includes("dark"))
+      //   (id.includes("light") && destPieceId.includes("light")) ||
+      //   (id.includes("dark") && destPieceId.includes("dark"))
       // ) {
       //   return 0;
       // }
@@ -561,8 +703,10 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
         return 0;
       }
       //if not moving horizontal, vertical, or diagonal
-      if ((Math.abs(yCoordD - yCoordO)/Math.abs(xCoordD - xCoordO) != 1)
-      && (Math.abs(Math.abs(yCoordD - yCoordO) - Math.abs(xCoordD - xCoordO)) != 1)) {
+      if (
+        Math.abs(yCoordD - yCoordO) / Math.abs(xCoordD - xCoordO) != 1 &&
+        Math.abs(Math.abs(yCoordD - yCoordO) - Math.abs(xCoordD - xCoordO)) != 1
+      ) {
         return 0;
       }
       break;
@@ -570,16 +714,16 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
 
   //friendly fire
   if (
-    (id.includes("light") && parentDestId.includes("light")) ||
-    (id.includes("dark") && parentDestId.includes("dark"))
+    (id.includes("light") && destPieceId.includes("light")) ||
+    (id.includes("dark") && destPieceId.includes("dark"))
   ) {
     return 0;
   }
 
   //success, update pieceArray
-  pieceArray[yCoordO][xCoordO] = "0";
-  pieceArray[yCoordD][xCoordD] = "T";
-  console.log(pieceArray);
+  // pieceArray[yCoordO][xCoordO] = "0";
+  // pieceArray[yCoordD][xCoordD] = "T";
+  // console.log(pieceArray);
   return 1;
 }
 
@@ -599,13 +743,6 @@ board.forEach((elem) => {
     // document.addEventListener('click', (e) => {
     // testFunction(e.target.id);
     if (e.target.tagName === "IMG") {
-      // console.log(
-      //   "piece selected: ",
-      //   e.target.tagName,
-      //   e.target.id,
-      //   " in ",
-      //   e.target.parentNode.id
-      // );
       selectedPiece = e.target;
     } else {
       selectedPiece = null;
@@ -616,40 +753,76 @@ board.forEach((elem) => {
   });
 
   elem.addEventListener("drop", (g) => {
-    // console.log("DROPPED:", g.target.id);
+    yCoordO = null;
+    xCoordO = null;
+    yCoordD = null;
+    xCoordD = null;
     targetParentNode = g.target.parentNode;
     //dragging to empty square
     if (g.target.tagName !== "IMG") {
-      // console.log('destination id: ', g.target.id)
       if (
-        isLegalMove(
+        handleMove(
           selectedPiece.className,
           selectedPiece.id,
           selectedPiece.parentNode.id,
-          // g.target.parentNode.id,
           targetParentNode.id,
           g.target.id
+          // isLegalMove(
+          //   selectedPiece.className,
+          //   selectedPiece.id,
+          //   selectedPiece.parentNode.id,
+          //   // g.target.parentNode.id,
+          //   targetParentNode.id,
+          //   g.target.id
         )
       ) {
+        pieceArray[yCoordO][xCoordO] = "0";
+        pieceArray[yCoordD][xCoordD] = "T";
+        console.log(pieceArray);
         selectedPiece.parentNode.removeChild(selectedPiece);
         g.target.appendChild(selectedPiece);
+        lightKingParentId = lightKing.parentNode.id;
+        darkKingParentId = darkKing.parentNode.id;
+        console.log(
+          "final LK: ",
+          lightKingParentId,
+          " final DK: ",
+          darkKingParentId
+        );
       }
     }
     // dragging to capture
     else {
-      // console.log("else hit");
       if (
-        isLegalMove(
+        handleMove(
           selectedPiece.className,
           selectedPiece.id,
           selectedPiece.parentNode.id,
           g.target.id,
           targetParentNode.id
         )
+        // isLegalMove(
+        //   selectedPiece.className,
+        //   selectedPiece.id,
+        //   selectedPiece.parentNode.id,
+        //   g.target.id,
+        //   targetParentNode.id
+        // )
       ) {
+        pieceArray[yCoordO][xCoordO] = "0";
+        pieceArray[yCoordD][xCoordD] = "T";
+        console.log(pieceArray);
         targetParentNode.removeChild(g.target);
         selectedPiece.parentNode.removeChild(selectedPiece);
         targetParentNode.appendChild(selectedPiece);
+        lightKingParentId = lightKing.parentNode.id;
+        darkKingParentId = darkKing.parentNode.id;
+        console.log(
+          "final LK: ",
+          lightKingParentId,
+          " final DK: ",
+          darkKingParentId
+        );
       }
     }
   });
