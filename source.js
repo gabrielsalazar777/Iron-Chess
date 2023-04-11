@@ -1,115 +1,131 @@
 let darkPawn1 = document.createElement("img");
-darkPawn1.className = "pawn";
+// darkPawn1.className = "pawn";
 darkPawn1.id = "dark-pawn-1";
 darkPawn1.src = "/images/dark_pawn.svg";
-darkPawn1.setAttribute("draggable", true);
+// darkPawn1.setAttribute("draggable", true);
 
 let darkPawn2 = document.createElement("img");
-darkPawn2.className = "pawn";
 darkPawn2.id = "dark-pawn-2";
 darkPawn2.src = "/images/dark_pawn.svg";
-darkPawn2.setAttribute("drabbable", true);
 
 let darkPawn3 = document.createElement("img");
+darkPawn3.id = "dark-pawn-3";
 darkPawn3.src = "/images/dark_pawn.svg";
 
 let darkPawn4 = document.createElement("img");
+darkPawn4.id = "dark-pawn-4";
 darkPawn4.src = "/images/dark_pawn.svg";
 
 let darkPawn5 = document.createElement("img");
+darkPawn5.id = "dark-pawn-5";
 darkPawn5.src = "/images/dark_pawn.svg";
 
 let darkPawn6 = document.createElement("img");
+darkPawn6.id = "dark-pawn-6";
 darkPawn6.src = "/images/dark_pawn.svg";
 
 let darkPawn7 = document.createElement("img");
+darkPawn7.id = "dark-pawn-7";
 darkPawn7.src = "/images/dark_pawn.svg";
 
 let darkPawn8 = document.createElement("img");
+darkPawn8.id = "dark-pawn-8";
 darkPawn8.src = "/images/dark_pawn.svg";
 
 let darkRook1 = document.createElement("img");
-darkRook1.className = 'rook';
-darkRook1.id = 'dark-rook-1';
+darkRook1.id = "dark-rook-1";
 darkRook1.src = "/images/dark_rook.svg";
-darkRook1.setAttribute('draggable', true);
 
 let darkRook2 = document.createElement("img");
+darkRook2.id = "dark-rook-2";
 darkRook2.src = "/images/dark_rook.svg";
 
 let darkKnight1 = document.createElement("img");
+darkKnight1.id = "dark-knight-1";
 darkKnight1.src = "/images/dark_knight.svg";
 
 let darkKnight2 = document.createElement("img");
+darkKnight2.id = "dark-knight-2";
 darkKnight2.src = "/images/dark_knight.svg";
 
 let darkBishop1 = document.createElement("img");
+darkBishop1.id = "dark-bishop-1";
 darkBishop1.src = "/images/dark_bishop.svg";
 
 let darkBishop2 = document.createElement("img");
+darkBishop2.id = "dark-bishop-2";
 darkBishop2.src = "/images/dark_bishop.svg";
 
 let darkQueen = document.createElement("img");
+darkQueen.id = "dark-queen";
 darkQueen.src = "/images/dark_queen.svg";
 
 let darkKing = document.createElement("img");
+darkKing.id = "dark-king";
 darkKing.src = "images/dark_king.svg";
 
 let lightPawn1 = document.createElement("img");
-lightPawn1.className = "pawn";
 lightPawn1.id = "light-pawn-1";
 lightPawn1.src = "/images/light_pawn.svg";
-lightPawn1.setAttribute("draggable", true);
 
 let lightPawn2 = document.createElement("img");
-lightPawn2.className = "pawn";
 lightPawn2.id = "light-pawn-2";
 lightPawn2.src = "/images/light_pawn.svg";
-lightPawn2.setAttribute("draggable", true);
 
 let lightPawn3 = document.createElement("img");
+lightPawn3.id = "light-pawn-3";
 lightPawn3.src = "/images/light_pawn.svg";
 
 let lightPawn4 = document.createElement("img");
+lightPawn4.id = "light-pawn-4";
 lightPawn4.src = "/images/light_pawn.svg";
 
 let lightPawn5 = document.createElement("img");
+lightPawn5.id = "light-pawn-5";
 lightPawn5.src = "/images/light_pawn.svg";
 
 let lightPawn6 = document.createElement("img");
+lightPawn6.id = "light-pawn-6";
 lightPawn6.src = "/images/light_pawn.svg";
 
 let lightPawn7 = document.createElement("img");
+lightPawn7.id = "light-pawn-7";
 lightPawn7.src = "/images/light_pawn.svg";
 
 let lightPawn8 = document.createElement("img");
+lightPawn8.id = "light-pawn-8";
 lightPawn8.src = "/images/light_pawn.svg";
 
 let lightRook1 = document.createElement("img");
+lightRook1.id = "light-rook-1";
 lightRook1.src = "/images/light_rook.svg";
 
 let lightRook2 = document.createElement("img");
+lightRook2.id = "light-rook-2";
 lightRook2.src = "/images/light_rook.svg";
 
 let lightKnight1 = document.createElement("img");
-lightKnight1.className = "knight";
 lightKnight1.id = "light-knight-1";
 lightKnight1.src = "/images/light_knight.svg";
-lightKnight1.setAttribute("draggable", true);
 
 let lightKnight2 = document.createElement("img");
+lightKnight2.id = "light-knight-2";
 lightKnight2.src = "/images/light_knight.svg";
 
 let lightBishop1 = document.createElement("img");
+lightBishop1.id = "light-bishop-1";
 lightBishop1.src = "/images/light_bishop.svg";
 
 let lightBishop2 = document.createElement("img");
+lightBishop2.id = "light-bishop-2";
 lightBishop2.src = "/images/light_bishop.svg";
 
 let lightQueen = document.createElement("img");
+lightQueen.id = "light-queen";
 lightQueen.src = "/images/light_queen.svg";
 
 let lightKing = document.createElement("img");
+lightKing.id = "light-king";
 lightKing.src = "/images/light_king.svg";
 
 function setPiece(square, piece) {
@@ -189,6 +205,30 @@ function initBoard() {
   setPiece("F1", lightBishop2);
   setPiece("D1", lightQueen);
   setPiece("E1", lightKing);
+  let images = document.querySelectorAll("img");
+  images.forEach((e) => {
+    e.setAttribute("draggable", true);
+    switch (true) {
+      case e.id.includes("pawn"):
+        e.className = "pawn";
+        break;
+      case e.id.includes("rook"):
+        e.className = "rook";
+        break;
+      case e.id.includes("knight"):
+        e.className = "knight";
+        break;
+      case e.id.includes("bishop"):
+        e.className = "bishop";
+        break;
+      case e.id.includes("queen"):
+        e.className = "queen";
+        break;
+      case e.id.includes("king"):
+        e.className = "king";
+        break;
+    }
+  });
 }
 initBoard();
 
@@ -309,11 +349,63 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
           }
         }
       }
-      pieceArray[yCoordO][xCoordO] = "0";
-      pieceArray[yCoordD][xCoordD] = "T";
-      console.log(pieceArray);
-      return 1;
+    case "rook":
+      //if moving diagonal
+      if (yCoordD != yCoordO && xCoordD != xCoordO) {
+        return 0;
+      }
+      // check for empty path on vertical axis
+      if (yCoordD != yCoordO) {
+        //moving downwards
+        if (yCoordD > yCoordO) {
+          for (i = 1; i < yCoordD - yCoordO; i++) {
+            if (pieceArray[yCoordO + i][xCoordO] !== "0") {
+              return 0;
+            }
+          }
+        }
+        //moving upwards
+        if (yCoordD < yCoordO) {
+          for (i = 1; i < yCoordO - yCoordD; i++) {
+            if (pieceArray[yCoordO - i][xCoordO] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      // check for empty path on horizontal axis
+      if (xCoordD != xCoordO) {
+        // moving right
+        if (xCoordD > xCoordO) {
+          for (i = 1; i < xCoordD - xCoordO; i++) {
+            if (pieceArray[yCoordO][xCoordO + i] !== "0") {
+              // console.log('rook failure')
+              return 0;
+            }
+          }
+        }
+        // moving left
+        if (xCoordD < xCoordO) {
+          for (i = 1; i < xCoordO - xCoordD; i++) {
+            if (pieceArray[yCoordO][xCoordO - i] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      //friendly fire
+      // maybe put this one bracket more outside
+      if (
+        (id.includes("light") && parentDestId.includes("light")) ||
+        (id.includes("dark") && parentDestId.includes("dark"))
+      ) {
+        return 0;
+      }
   }
+  pieceArray[yCoordO][xCoordO] = "0";
+  pieceArray[yCoordD][xCoordD] = "T";
+  console.log(pieceArray);
+  return 1;
 }
 
 // function testFunction(e) {
@@ -323,7 +415,7 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
 // let board = document.getElementById('chess-board');
 
 let board = document.querySelectorAll(".row > div");
-let images = document.querySelectorAll("img");
+// let images = document.querySelectorAll("img");
 let selectedPiece;
 
 board.forEach((elem) => {
