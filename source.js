@@ -1,3 +1,5 @@
+//generate img elements, their srcs, and their ids
+
 let darkPawn1 = document.createElement("img");
 // darkPawn1.className = "pawn";
 darkPawn1.id = "dark-pawn-1";
@@ -128,10 +130,12 @@ let lightKing = document.createElement("img");
 lightKing.id = "light-king";
 lightKing.src = "/images/light_king.svg";
 
+//adding img to appropriate divs at init
 function setPiece(square, piece) {
   document.getElementById(square).appendChild(piece);
 }
 
+// tester Piece class, might not be used
 class Piece {
   constructor() {
     this.square;
@@ -147,6 +151,7 @@ class Piece {
   }
 }
 
+//board array for use in converting div ID to coords
 let boardArray = [
   ["A8", "B8", "C8", "D8", "E8", "F8", "G8", "H8"],
   ["A7", "B7", "C7", "D7", "E7", "F7", "G7", "H7"],
@@ -158,6 +163,7 @@ let boardArray = [
   ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
 ];
 
+//board array for use in path checking
 let pieceArray = [
   ["T", "T", "T", "T", "T", "T", "T", "T"],
   ["T", "T", "T", "T", "T", "T", "T", "T"],
@@ -172,6 +178,7 @@ let pieceArray = [
 //BOARD INIT HERE!
 let dPawn1 = new Piece();
 function initBoard() {
+  //set pieces to appropriate div square at init
   dPawn1.classSetPiece("A7", darkPawn1, "pawn");
   // setPiece("A7", darkPawn1);
   setPiece("B7", darkPawn2);
@@ -205,6 +212,8 @@ function initBoard() {
   setPiece("F1", lightBishop2);
   setPiece("D1", lightQueen);
   setPiece("E1", lightKing);
+
+  //set draggable and appropriate className on each img
   let images = document.querySelectorAll("img");
   images.forEach((e) => {
     e.setAttribute("draggable", true);
@@ -232,12 +241,14 @@ function initBoard() {
 }
 initBoard();
 
+//check if piece is making a legal move
 function isLegalMove(type, id, origin, parentDestId, destination) {
   let yCoordO;
   let xCoordO;
   let yCoordD;
   let xCoordD;
 
+  //convert div square ID to array coords from boardArray
   boardArray.forEach((elem, i) => {
     elem.forEach((sq, j) => {
       if (sq === origin) {
@@ -258,7 +269,8 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
 
   console.log("Origin info: ", type, id, yCoordO, xCoordO, origin);
   console.log("Destination info: ", type, yCoordD, xCoordD, destination);
-  // console.log("id: ", id);
+
+  //handle move based on img class ('type')
   switch (type) {
     case "pawn":
       //if dark moving towards light
@@ -409,6 +421,50 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
         return 0;
       }
       break;
+    case "bishop":
+      //if not moving diagonally
+      if (Math.abs(yCoordD - yCoordO) / Math.abs(xCoordD - xCoordO) != 1) {
+        return 0;
+      }
+      //check empty path moving diagonal down
+      if (yCoordD > yCoordO) {
+        //diagonal down-left
+        if (xCoordD < xCoordO) {
+          for (i = 1; i < yCoordD - yCoordO; i++) {
+            if (pieceArray[yCoordO + i][xCoordO - i] !== "0") {
+              return 0;
+            }
+          }
+        }
+        //diagonal down-right
+        if (xCoordD > xCoordO) {
+          for (i = 1; i < yCoordD - yCoordO; i++) {
+            if (pieceArray[yCoordO + i][xCoordO + i] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      //check empty path moving diagonal up
+      if (yCoordD < yCoordO) {
+        //diagonal up-left
+        if (xCoordD < xCoordO) {
+          for (i = 1; i < yCoordO - yCoordD; i++) {
+            if (pieceArray[yCoordO - i][xCoordO - i] !== "0") {
+              return 0;
+            }
+          }
+        }
+        //diagonal up-right
+        if (xCoordD > xCoordO) {
+          for (i = 1; i < yCoordO - yCoordD; i++) {
+            if (pieceArray[yCoordO - i][xCoordO + i] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      break;
   }
 
   //friendly fire
@@ -419,6 +475,7 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
     return 0;
   }
 
+  //success, update pieceArray
   pieceArray[yCoordO][xCoordO] = "0";
   pieceArray[yCoordD][xCoordD] = "T";
   console.log(pieceArray);
@@ -460,6 +517,7 @@ board.forEach((elem) => {
   elem.addEventListener("drop", (g) => {
     // console.log("DROPPED:", g.target.id);
     targetParentNode = g.target.parentNode;
+    //dragging to empty square
     if (g.target.tagName !== "IMG") {
       // console.log('destination id: ', g.target.id)
       if (
@@ -475,7 +533,9 @@ board.forEach((elem) => {
         selectedPiece.parentNode.removeChild(selectedPiece);
         g.target.appendChild(selectedPiece);
       }
-    } else {
+    }
+    // dragging to capture
+    else {
       // console.log("else hit");
       if (
         isLegalMove(
