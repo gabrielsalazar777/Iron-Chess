@@ -465,6 +465,96 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
         }
       }
       break;
+    case "queen":
+      //if not moving vertical, horizontal, or diagonal
+      if (
+        yCoordD != yCoordO &&
+        xCoordD != xCoordO &&
+        Math.abs(yCoordD - yCoordO) / Math.abs(xCoordD - xCoordO) != 1
+      ) {
+        return 0;
+      }
+      //if moving vertically
+      if (yCoordD != yCoordO && xCoordD === xCoordO) {
+        //check empty vertical path down
+        if (yCoordD > yCoordO) {
+          for (i = 1; i < yCoordD - yCoordO; i++) {
+            if (pieceArray[yCoordO + i][xCoordO] !== "0") {
+              return 0;
+            }
+          }
+        }
+        //check empty vertical path up
+        if (yCoordD < yCoordO) {
+          for (i = 1; i < yCoordO - yCoordD; i++) {
+            if (pieceArray[yCoordO - i][xCoordO] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      //if moving horizontally
+      if (yCoordD === yCoordO && xCoordD != xCoordO) {
+        //check empty path moving right
+        if (xCoordD > xCoordO) {
+          for (i = 1; i < xCoordD - xCoordO; i++) {
+            if (pieceArray[yCoordO][xCoordO + i] !== "0") {
+              // console.log('rook failure')
+              return 0;
+            }
+          }
+        }
+        //check empty path moving left
+        if (xCoordD < xCoordO) {
+          for (i = 1; i < xCoordO - xCoordD; i++) {
+            if (pieceArray[yCoordO][xCoordO - i] !== "0") {
+              return 0;
+            }
+          }
+        }
+      }
+      //if moving diagonally
+      if (Math.abs(yCoordD - yCoordO) / Math.abs(xCoordD - xCoordO) === 1) {
+        //check empty path moving diagonal down
+        if (yCoordD > yCoordO) {
+          //diagonal down-left
+          if (xCoordD < xCoordO) {
+            for (i = 1; i < yCoordD - yCoordO; i++) {
+              if (pieceArray[yCoordO + i][xCoordO - i] !== "0") {
+                return 0;
+              }
+            }
+          }
+          //diagonal down-right
+          if (xCoordD > xCoordO) {
+            for (i = 1; i < yCoordD - yCoordO; i++) {
+              if (pieceArray[yCoordO + i][xCoordO + i] !== "0") {
+                return 0;
+              }
+            }
+          }
+        }
+        //check empty path moving diagonal up
+        if (yCoordD < yCoordO) {
+          //diagonal up-left
+          if (xCoordD < xCoordO) {
+            for (i = 1; i < yCoordO - yCoordD; i++) {
+              if (pieceArray[yCoordO - i][xCoordO - i] !== "0") {
+                return 0;
+              }
+            }
+          }
+          //diagonal up-right
+          if (xCoordD > xCoordO) {
+            for (i = 1; i < yCoordO - yCoordD; i++) {
+              if (pieceArray[yCoordO - i][xCoordO + i] !== "0") {
+                return 0;
+              }
+            }
+          }
+        }
+      }
+      break;
   }
 
   //friendly fire
