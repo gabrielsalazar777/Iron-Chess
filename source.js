@@ -349,6 +349,7 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
           }
         }
       }
+      break;
     case "rook":
       //if moving diagonal
       if (yCoordD != yCoordO && xCoordD != xCoordO) {
@@ -395,13 +396,29 @@ function isLegalMove(type, id, origin, parentDestId, destination) {
       }
       //friendly fire
       // maybe put this one bracket more outside
-      if (
-        (id.includes("light") && parentDestId.includes("light")) ||
-        (id.includes("dark") && parentDestId.includes("dark"))
-      ) {
+      // if (
+      //   (id.includes("light") && parentDestId.includes("light")) ||
+      //   (id.includes("dark") && parentDestId.includes("dark"))
+      // ) {
+      //   return 0;
+      // }
+      break;
+    case "knight":
+      // console.log(type, "knight hit");
+      if (Math.abs((yCoordD - yCoordO) * (xCoordD - xCoordO)) !== 2) {
         return 0;
       }
+      break;
   }
+
+  //friendly fire
+  if (
+    (id.includes("light") && parentDestId.includes("light")) ||
+    (id.includes("dark") && parentDestId.includes("dark"))
+  ) {
+    return 0;
+  }
+
   pieceArray[yCoordO][xCoordO] = "0";
   pieceArray[yCoordD][xCoordD] = "T";
   console.log(pieceArray);
