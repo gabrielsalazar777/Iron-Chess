@@ -243,18 +243,10 @@ function initBoard() {
 initBoard();
 
 function handleMove(type, id, origin, destPieceId, destination) {
-  // let yCoordOTemp = yCoordO;
-  // let xCoordOTemp = xCoordO;
-  // let yCoordDTemp = yCoordD;
-  // let xCoordDTemp = xCoordD;
   if (
     isLegalMove(type, id, origin, destPieceId, destination) &&
     avoidFriendlyCheck(id, origin, destination)
   ) {
-    // yCoordO = yCoordOTemp;
-    // xCoordO = xCoordOTemp;
-    // yCoordD = yCoordDTemp;
-    // xCoordD = xCoordDTemp;
     return 1;
   } else {
     return 0;
@@ -285,8 +277,6 @@ function coordinateConversion(origin, destination) {
   });
 }
 
-// let lightCheck, darkCheck;
-
 function isCheckOrMate() {
   let lightMate, darkMate;
   let lightCheck, darkCheck;
@@ -294,7 +284,6 @@ function isCheckOrMate() {
 
   //check for light move leading to dark king in check
   if (playerTurn === "light") {
-    // currentImages = document.querySelectorAll("img");
     currentImages.forEach((e) => {
       if (e.id.includes("light")) {
         if (
@@ -357,6 +346,12 @@ function isCheckOrMate() {
         boardArray.forEach((row) => {
           row.forEach((coord) => {
             if (avoidFriendlyCheck(e.id, e.parentNode.id, coord)) {
+              console.log(
+                "Line 360: lightMate false at: e.id, e.parentNode.id, coord: ",
+                e.id,
+                e.parentNode.id,
+                coord
+              );
               lightMate = false;
             }
           });
@@ -365,14 +360,15 @@ function isCheckOrMate() {
     });
   }
 
-  if (playerTurn === "dark" && lightMate === false) {
+  if (playerTurn === "dark" && lightMate === true) {
     console.log("WHITE IN CHECKMATE!");
   }
-  if (playerTurn === "light" && darkMate === false) {
+  if (playerTurn === "light" && darkMate === true) {
     console.log("DARK IN CHECKMATE");
   }
 }
 
+// function avoidFriendlyCheck(type, id, origin, destPieceId, destination) {
 function avoidFriendlyCheck(id, origin, destination) {
   let legalMove = true;
   let yCoordOTemp = yCoordO;
@@ -382,9 +378,44 @@ function avoidFriendlyCheck(id, origin, destination) {
   coordinateConversion(origin, destination);
   currentImages = document.querySelectorAll("img");
 
+  //if dest coords lead to 0 run first syntax
+  //if dest coords lead to T, run second syntax
+
+  //start testing code here
+  let type = document.getElementById(id).className;
+  if (pieceArray[yCoordD][xCoordD] === "0") {
+    console.log(
+      "387: type, id, origin, destination",
+      type,
+      id,
+      origin,
+      destination
+    );
+    if (!isLegalMove(type, id, origin, "anything", destination)) {
+      yCoordO = yCoordOTemp;
+      xCoordO = xCoordOTemp;
+      yCoordD = yCoordDTemp;
+      xCoordD = xCoordDTemp;
+      return 0;
+    }
+  }
+  if (pieceArray[yCoordD][xCoordD] === "T") {
+    console.log("line 403: if hit");
+    let tempCoords = boardArray[yCoordD][xCoordD];
+    let targetId = document.getElementById(destination).firstChild.id;
+    if (!isLegalMove(type, id, origin, targetId, destination)) {
+      yCoordO = yCoordOTemp;
+      xCoordO = xCoordOTemp;
+      yCoordD = yCoordDTemp;
+      xCoordD = xCoordDTemp;
+      return 0;
+    }
+  }
+  //end testing code here
+
   //store original pieceArray to simulate attempted move
   let tempArray = JSON.parse(JSON.stringify(pieceArray));
-  console.log("line 375: ", tempArray);
+  // console.log("line 375: ", tempArray);
   pieceArray[yCoordO][xCoordO] = "0";
   pieceArray[yCoordD][xCoordD] = "T";
 
@@ -454,7 +485,7 @@ function avoidFriendlyCheck(id, origin, destination) {
   }
 
   if (legalMove) {
-    console.log("line 445: legal move true");
+    // console.log("line 445: legal move true");
     yCoordO = yCoordOTemp;
     xCoordO = xCoordOTemp;
     yCoordD = yCoordDTemp;
@@ -483,6 +514,7 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
   //handle move based on img class ('type')
   switch (type) {
     case "pawn":
+      console.log("line 516 destPieceId: ", destPieceId);
       //if dark moving towards light
       if (id.includes("dark")) {
         //if moving back or sideways
@@ -493,12 +525,10 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
         if (
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordD - yCoordO === 1 &&
-          destPieceId.includes("light")
+          // destPieceId.includes("light")
+          (destPieceId.includes("light") || destination.includes("light"))
+          // (pieceArray[yCoordD][xCoordD] === "T" && destPieceId.includes("light"))
         ) {
-          // console.log("destPieceId success: ", destPieceId);
-          // pieceArray[yCoordO][xCoordO] = "0";
-          // pieceArray[yCoordD][xCoordD] = "T";
-          // console.log(pieceArray);
           return 1;
         }
         // if moving to empty diagonal forward
@@ -506,6 +536,7 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordD - yCoordO === 1
         ) {
+          console.log("line 537: false");
           return 0;
         }
         //if moving two squares not on init, or moving 3+ squares
@@ -765,14 +796,35 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
   }
 
   //friendly fire
-  if (
-    (id.includes("light") && destPieceId.includes("light")) ||
-    (id.includes("dark") && destPieceId.includes("dark"))
-  ) {
-    return 0;
-  }
+  //test code begins here
+  // if (pieceArray[yCoordD][xCoordD] === "T") {
+  //   if (
+  //     (id.includes("light") && destPieceId.includes("light")) ||
+  //     (id.includes("dark") && destPieceId.includes("dark"))
+  //     ) {
+  //       return 0;
+  //     }
+  //   } else if (pieceArray[yCoordD][xCoordD === "0"]) {
+  //     if (
+  //     (id.includes("light") && destination.includes("light")) ||
+  //     (id.includes("dark") && destination.includes("dark"))
+  //   ) {
+  //     return 0;
+  //   }
+  // }
+    //test code ends here
 
-  return 1;
+    //bring below back if above not working
+    if (
+      (id.includes("light") && destPieceId.includes("light")) ||
+      (id.includes("dark") && destPieceId.includes("dark"))
+      // (id.includes("light") && destination.includes("light")) ||
+      // (id.includes("dark") && destination.includes("dark"))
+    ) {
+      return 0;
+    }
+
+    return 1;
 }
 
 let board = document.querySelectorAll(".row > div");
@@ -817,10 +869,10 @@ board.forEach((elem) => {
           g.target.id
         )
       ) {
-        console.log("line 812:", pieceArray);
+        // console.log("line 812:", pieceArray);
         pieceArray[yCoordO][xCoordO] = "0";
         pieceArray[yCoordD][xCoordD] = "T";
-        console.log("Line 815: ", pieceArray);
+        // console.log("Line 815: ", pieceArray);
         selectedPiece.parentNode.removeChild(selectedPiece);
         g.target.appendChild(selectedPiece);
         lightKingParentId = lightKing.parentNode.id;
@@ -834,12 +886,12 @@ board.forEach((elem) => {
         // );
         if (playerTurn === "light") {
           playerTurn = "dark";
-          console.log("line 829: ", pieceArray);
-          console.log("playerTurn ended1 : light");
+          // console.log("line 829: ", pieceArray);
+          // console.log("playerTurn ended1 : light");
         } else if (playerTurn === "dark") {
           playerTurn = "light";
-          console.log("line 813: ", pieceArray);
-          console.log("playerTurn ended1 : dark");
+          // console.log("line 813: ", pieceArray);
+          // console.log("playerTurn ended1 : dark");
         }
       }
     }
@@ -857,7 +909,7 @@ board.forEach((elem) => {
       ) {
         pieceArray[yCoordO][xCoordO] = "0";
         pieceArray[yCoordD][xCoordD] = "T";
-        console.log("line 852: ", pieceArray);
+        // console.log("line 852: ", pieceArray);
         targetParentNode.removeChild(g.target);
         selectedPiece.parentNode.removeChild(selectedPiece);
         targetParentNode.appendChild(selectedPiece);
@@ -866,12 +918,12 @@ board.forEach((elem) => {
         isCheckOrMate();
         if (playerTurn === "light") {
           playerTurn = "dark";
-          console.log("line 861: ", pieceArray);
-          console.log("playerTurn ended2 : light");
+          // console.log("line 861: ", pieceArray);
+          // console.log("playerTurn ended2 : light");
         } else if (playerTurn === "dark") {
           playerTurn = "light";
-          console.log("line 865: ", pieceArray);
-          console.log("playerTurn ended2 : dark");
+          // console.log("line 865: ", pieceArray);
+          // console.log("playerTurn ended2 : dark");
         }
         // console.log(
         //   "final LK: ",
