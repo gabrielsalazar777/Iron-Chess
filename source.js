@@ -243,10 +243,18 @@ function initBoard() {
 initBoard();
 
 function handleMove(type, id, origin, destPieceId, destination) {
+  // let yCoordOTemp = yCoordO;
+  // let xCoordOTemp = xCoordO;
+  // let yCoordDTemp = yCoordD;
+  // let xCoordDTemp = xCoordD;
   if (
     isLegalMove(type, id, origin, destPieceId, destination) &&
     avoidFriendlyCheck(id, origin, destination)
   ) {
+    // yCoordO = yCoordOTemp;
+    // xCoordO = xCoordOTemp;
+    // yCoordD = yCoordDTemp;
+    // xCoordD = xCoordDTemp;
     return 1;
   } else {
     return 0;
@@ -325,48 +333,52 @@ function isCheckOrMate() {
     });
   }
 
-  // //check for mate on dark king
-  // if (darkCheck === true) {
-  //   darkMate = true;
-  //   currentImages.forEach((e) => {
-  //     if (e.id.includes("dark")) {
-  //       boardArray.forEach((row) => {
-  //         row.forEach((coord) => {
-  //           if (avoidFriendlyCheck(e.id, e.parentNode.id, coord)) {
-  //             darkMate = false;
-  //           }
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
+  //check for mate on dark king
+  if (darkCheck === true) {
+    darkMate = true;
+    currentImages.forEach((e) => {
+      if (e.id.includes("dark")) {
+        boardArray.forEach((row) => {
+          row.forEach((coord) => {
+            if (avoidFriendlyCheck(e.id, e.parentNode.id, coord)) {
+              darkMate = false;
+            }
+          });
+        });
+      }
+    });
+  }
 
-  // //check for mate on light king
-  // if (lightCheck === true) {
-  //   lightMate = true;
-  //   currentImages.forEach((e) => {
-  //     if (e.id.includes("light")) {
-  //       boardArray.forEach((row) => {
-  //         row.forEach((coord) => {
-  //           if (avoidFriendlyCheck(e.id, e.parentNode.id, coord)) {
-  //             lightMate = false;
-  //           }
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
+  //check for mate on light king
+  if (lightCheck === true) {
+    lightMate = true;
+    currentImages.forEach((e) => {
+      if (e.id.includes("light")) {
+        boardArray.forEach((row) => {
+          row.forEach((coord) => {
+            if (avoidFriendlyCheck(e.id, e.parentNode.id, coord)) {
+              lightMate = false;
+            }
+          });
+        });
+      }
+    });
+  }
 
-  // if (playerTurn === "dark" && lightMate === true) {
-  //   console.log("WHITE IN CHECKMATE!");
-  // }
-  // if (playerTurn === "light" && darkMate === true) {
-  //   console.log("DARK IN CHECKMATE");
-  // }
+  if (playerTurn === "dark" && lightMate === false) {
+    console.log("WHITE IN CHECKMATE!");
+  }
+  if (playerTurn === "light" && darkMate === false) {
+    console.log("DARK IN CHECKMATE");
+  }
 }
 
 function avoidFriendlyCheck(id, origin, destination) {
   let legalMove = true;
+  let yCoordOTemp = yCoordO;
+  let xCoordOTemp = xCoordO;
+  let yCoordDTemp = yCoordD;
+  let xCoordDTemp = xCoordD;
   coordinateConversion(origin, destination);
   currentImages = document.querySelectorAll("img");
 
@@ -443,11 +455,19 @@ function avoidFriendlyCheck(id, origin, destination) {
 
   if (legalMove) {
     console.log("line 445: legal move true");
+    yCoordO = yCoordOTemp;
+    xCoordO = xCoordOTemp;
+    yCoordD = yCoordDTemp;
+    xCoordD = xCoordDTemp;
     pieceArray = JSON.parse(JSON.stringify(tempArray));
     return 1;
   }
   if (!legalMove) {
     legalMove = true;
+    yCoordO = yCoordOTemp;
+    xCoordO = xCoordOTemp;
+    yCoordD = yCoordDTemp;
+    xCoordD = xCoordDTemp;
     pieceArray = JSON.parse(JSON.stringify(tempArray));
     return 0;
   }
@@ -797,10 +817,10 @@ board.forEach((elem) => {
           g.target.id
         )
       ) {
-        console.log("line 809:", pieceArray);
+        console.log("line 812:", pieceArray);
         pieceArray[yCoordO][xCoordO] = "0";
         pieceArray[yCoordD][xCoordD] = "T";
-        console.log("Line 795: ", pieceArray);
+        console.log("Line 815: ", pieceArray);
         selectedPiece.parentNode.removeChild(selectedPiece);
         g.target.appendChild(selectedPiece);
         lightKingParentId = lightKing.parentNode.id;
@@ -814,7 +834,7 @@ board.forEach((elem) => {
         // );
         if (playerTurn === "light") {
           playerTurn = "dark";
-          console.log("line 809: ", pieceArray);
+          console.log("line 829: ", pieceArray);
           console.log("playerTurn ended1 : light");
         } else if (playerTurn === "dark") {
           playerTurn = "light";
@@ -837,7 +857,7 @@ board.forEach((elem) => {
       ) {
         pieceArray[yCoordO][xCoordO] = "0";
         pieceArray[yCoordD][xCoordD] = "T";
-        console.log("line 832: ", pieceArray);
+        console.log("line 852: ", pieceArray);
         targetParentNode.removeChild(g.target);
         selectedPiece.parentNode.removeChild(selectedPiece);
         targetParentNode.appendChild(selectedPiece);
@@ -846,11 +866,11 @@ board.forEach((elem) => {
         isCheckOrMate();
         if (playerTurn === "light") {
           playerTurn = "dark";
-          console.log("line 841: ", pieceArray);
+          console.log("line 861: ", pieceArray);
           console.log("playerTurn ended2 : light");
         } else if (playerTurn === "dark") {
           playerTurn = "light";
-          console.log("line 845: ", pieceArray);
+          console.log("line 865: ", pieceArray);
           console.log("playerTurn ended2 : dark");
         }
         // console.log(
