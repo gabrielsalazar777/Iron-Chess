@@ -1,9 +1,9 @@
 body {
   background-color: rgb(168, 193, 172);
-  padding-left: 32.5vw;
 }
 
 #logo-div {
+  padding-left: 32.5vw;
   width: 47.5rem;
   height: 5rem;
   display: flex;
@@ -22,9 +22,8 @@ h1 {
 }
 
 h2 {
-  padding-left: 6.2rem;
-  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-  /* color: rgb(254, 254, 254); */
+   padding-left: 39vw;
+   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 
 img {
@@ -43,6 +42,7 @@ img {
   width: 30rem;
   height: 4rem;
   margin-top: 0rem;
+  padding-left: 32.5vw;
 }
 
 button {
@@ -51,6 +51,7 @@ button {
   width: 7rem;
   font-size: 1.1rem;
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  box-shadow: 0.1rem 0.1rem;
 }
 
 #start-button {
@@ -59,6 +60,10 @@ button {
 
 #restart-button {
   background-color: rgb(225, 118, 118);
+}
+
+#chess-board {
+  padding-left: 32.5vw;
 }
 
 #chess-board > p {
