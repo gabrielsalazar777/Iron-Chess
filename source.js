@@ -169,7 +169,7 @@ function initBoard() {
   setPiece("E1", lightKing);
 
   //set draggable and appropriate className on each img
-  let images = document.querySelectorAll("img");
+  let images = document.querySelectorAll("#chess-board img");
   images.forEach((e) => {
     e.setAttribute("draggable", true);
     switch (true) {
@@ -239,7 +239,7 @@ let player1Wins, player2Wins;
 function isCheckOrMate() {
   let lightMate, darkMate;
   let lightCheck, darkCheck;
-  currentImages = document.querySelectorAll("img");
+  currentImages = document.querySelectorAll("#chess-board img");
 
   //check for light move leading to dark king in check
   if (playerTurn === "light") {
@@ -327,7 +327,7 @@ function avoidFriendlyCheck(id, origin, destination) {
   let yCoordDTemp = yCoordD;
   let xCoordDTemp = xCoordD;
   coordinateConversion(origin, destination);
-  currentImages = document.querySelectorAll("img");
+  currentImages = document.querySelectorAll("#chess-board img");
 
   //pass correct order of arguments to isLegalMove if destination square empty
   let type = document.getElementById(id).className;
@@ -747,7 +747,7 @@ window.onload = function () {
     if (gameOn) {
       gameOn = false;
       console.log("game OFF");
-      let resetImages = document.querySelectorAll("img");
+      let resetImages = document.querySelectorAll("#chess-board img");
       resetImages.forEach((img) => {
         if (img.id.includes("light") || img.id.includes("dark")) {
           img.parentNode.removeChild(img);
