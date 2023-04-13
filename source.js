@@ -381,7 +381,7 @@ function avoidFriendlyCheck(id, origin, destination) {
   //if dest coords lead to 0 run first syntax
   //if dest coords lead to T, run second syntax
 
-  //start testing code here
+  //TEST start testing code here
   let type = document.getElementById(id).className;
   if (pieceArray[yCoordD][xCoordD] === "0") {
     console.log(
@@ -396,6 +396,7 @@ function avoidFriendlyCheck(id, origin, destination) {
       xCoordO = xCoordOTemp;
       yCoordD = yCoordDTemp;
       xCoordD = xCoordDTemp;
+      console.log("line 399: movement to 0 square illegal: ", destination);
       return 0;
     }
   }
@@ -408,6 +409,11 @@ function avoidFriendlyCheck(id, origin, destination) {
       xCoordO = xCoordOTemp;
       yCoordD = yCoordDTemp;
       xCoordD = xCoordDTemp;
+      console.log(
+        "line 411: movement to T square illegal: ",
+        targetId,
+        destination
+      );
       return 0;
     }
   }
@@ -415,24 +421,49 @@ function avoidFriendlyCheck(id, origin, destination) {
 
   //store original pieceArray to simulate attempted move
   let tempArray = JSON.parse(JSON.stringify(pieceArray));
-  // console.log("line 375: ", tempArray);
   pieceArray[yCoordO][xCoordO] = "0";
   pieceArray[yCoordD][xCoordD] = "T";
 
   //stop king from throwing himself in check
   if (id.includes("dark-king") || id.includes("light-king")) {
     currentImages.forEach((e) => {
-      if (isLegalMove(e.className, e.id, e.parentNode.id, id, destination)) {
-        // console.log("IS CHECK KING FAILED, ILLEGAL MOVE");
-        pieceArray = JSON.parse(JSON.stringify(tempArray));
-        legalMove = false;
+      if (!e.parentNode.id.includes(destination)) {
+        if (isLegalMove(e.className, e.id, e.parentNode.id, id, destination)) {
+          pieceArray = JSON.parse(JSON.stringify(tempArray));
+          console.log(
+            "428: illegal move, king throws themselves in check: ",
+            e.className,
+            e.id,
+            e.parentNode.id,
+            id,
+            destination
+          );
+          legalMove = false;
+        }
       }
+
+      //TEST use below if above (430 - 444) doesn't work
+
+      // if (isLegalMove(e.className, e.id, e.parentNode.id, id, destination)) {
+      //   pieceArray = JSON.parse(JSON.stringify(tempArray));
+      //   console.log(
+      //     "428: illegal move, king throws themselves in check: ",
+      //     e.className,
+      //     e.id,
+      //     e.parentNode.id,
+      //     id,
+      //     destination
+      //   );
+      //   legalMove = false;
+      // }
     });
   }
   //stop light piece move from throwing their king in check
   else if (id.includes("light")) {
     currentImages.forEach((e) => {
-      if (e.id.includes("dark")) {
+      if (e.id.includes("dark") && !e.parentNode.id.includes(destination)) {
+        //TEST use line below if line above is breaking stuff
+        // if (e.id.includes("dark")) {
         if (
           isLegalMove(
             e.className,
@@ -442,15 +473,15 @@ function avoidFriendlyCheck(id, origin, destination) {
             lightKingParentId
           )
         ) {
-          // console.log("is check failed1, illegal move");
-          // console.log(
-          //   "className, id, parentNode ID, lightKingParentId: ",
-          //   e.className,
-          //   e.id,
-          //   e.parentNode.id,
-          //   lightKingParentId
-          // );
           pieceArray = JSON.parse(JSON.stringify(tempArray));
+          console.log(
+            "line 447: illegal move on white piece: ",
+            e.className,
+            e.id,
+            e.parentNode.id,
+            id,
+            destination
+          );
           legalMove = false;
         }
       }
@@ -459,7 +490,9 @@ function avoidFriendlyCheck(id, origin, destination) {
   //stop dark piece move from throwing their king in check
   else if (id.includes("dark")) {
     currentImages.forEach((e) => {
-      if (e.id.includes("light")) {
+      //TEST LINE BELOW
+      if (e.id.includes("light") && !e.parentNode.id.includes(destination)) {
+        // if (e.id.includes("light")) {
         if (
           isLegalMove(
             e.className,
@@ -469,14 +502,6 @@ function avoidFriendlyCheck(id, origin, destination) {
             darkKingParentId
           )
         ) {
-          // console.log("is check failed1, illegal move");
-          // console.log(
-          //   "className, id, parentNode ID, darkKingKingParentId: ",
-          //   e.className,
-          //   e.id,
-          //   e.parentNode.id,
-          //   darkKingParentId
-          // );
           pieceArray = JSON.parse(JSON.stringify(tempArray));
           legalMove = false;
         }
@@ -485,7 +510,6 @@ function avoidFriendlyCheck(id, origin, destination) {
   }
 
   if (legalMove) {
-    // console.log("line 445: legal move true");
     yCoordO = yCoordOTemp;
     xCoordO = xCoordOTemp;
     yCoordD = yCoordDTemp;
@@ -514,7 +538,7 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
   //handle move based on img class ('type')
   switch (type) {
     case "pawn":
-      console.log("line 516 destPieceId: ", destPieceId);
+      //if any pawn moving diagonal 2 or more
       if (Math.abs(xCoordD - xCoordO) >= 2) {
         return 0;
       }
@@ -528,9 +552,7 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
         if (
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordD - yCoordO === 1 &&
-          // destPieceId.includes("light")
           (destPieceId.includes("light") || destination.includes("light"))
-          // (pieceArray[yCoordD][xCoordD] === "T" && destPieceId.includes("light"))
         ) {
           return 1;
         }
@@ -568,12 +590,8 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
         if (
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordO - yCoordD === 1 &&
-          destPieceId.includes("dark")
+          (destPieceId.includes("dark") || destination.includes("dark"))
         ) {
-          // console.log("destPieceId success: ", destination);
-          // pieceArray[yCoordO][xCoordO] = "0";
-          // pieceArray[yCoordD][xCoordD] = "T";
-          // console.log(pieceArray);
           return 1;
         }
         // if moving to empty diagonal forward
@@ -581,7 +599,6 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
           (xCoordD - xCoordO === 1 || xCoordD - xCoordO === -1) &&
           yCoordO - yCoordD === 1
         ) {
-          // console.log("destPieceId fail: ", destPieceId);
           return 0;
         }
         //if moving two squares not on init, or moving 3+ squares
@@ -788,50 +805,11 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
       if (Math.abs(yCoordD - yCoordO) > 1 || Math.abs(xCoordD - xCoordO) > 1) {
         return 0;
       }
-      //if not moving horizontal, vertical, or diagonal
-      if (
-        Math.abs(yCoordD - yCoordO) / Math.abs(xCoordD - xCoordO) != 1 &&
-        Math.abs(Math.abs(yCoordD - yCoordO) - Math.abs(xCoordD - xCoordO)) != 1
-      ) {
-        return 0;
-      }
       break;
   }
 
   //friendly fire
-  //test code begins here
-  // if (pieceArray[yCoordD][xCoordD] === "T") {
-  //   if (
-  //     (id.includes("light") && destPieceId.includes("light")) ||
-  //     (id.includes("dark") && destPieceId.includes("dark"))
-  //     ) {
-  //       return 0;
-  //     }
-  //   } else if (pieceArray[yCoordD][xCoordD === "0"]) {
-  //     if (
-  //     (id.includes("light") && destination.includes("light")) ||
-  //     (id.includes("dark") && destination.includes("dark"))
-  //   ) {
-  //     return 0;
-  //   }
-  // }
-  //test code ends here
-
-  //bring below back if above not working
-
-  //NEW TRY WITH DANIEL
   console.log("line 818: ", destPieceId);
-  // if (destPieceId && //chatGPT suggestion line 819
-  //   (id.includes("light") && destPieceId.includes("light")) ||
-  //   (id.includes("dark") && destPieceId.includes("dark"))
-  //   // (id.includes("light") && destPieceId.includes("light")) ||
-  //   // (id.includes("dark") && destPieceId.includes("dark"))
-  //   // (id.includes("light") && destination.includes("light")) ||
-  //   // (id.includes("dark") && destination.includes("dark"))
-  // ) {
-  //   return 0;
-  // }
-
   if (destPieceId) {
     if (
       (id.includes("light") && destPieceId.includes("light")) ||
