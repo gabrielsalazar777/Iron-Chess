@@ -4,11 +4,24 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tilt+Prism&display=swap"
+      rel="stylesheet"
+    />
     <title>Iron Chess</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Iron Chess</h1>
+    <div id="logo-div">
+      <img id="logo-img" src="images/logo piece.png" alt="King Piece Logo" />
+      <h1>ron Chess</h1>
+    </div>
+    <div id="buttons">
+      <button type="button" id="start-button">Start Game</button>
+      <button type="button" id="restart-button">End Game</button>
+    </div>
     <div id="chess-board">
       <p>A B C D E F G H</p>
       <div class="row" id="row-8">
@@ -107,6 +120,8 @@
         <div class="white" id="H1"></div>
       </div>
     </div>
+    <h2 id="player-1-victory">Player 1 has Checkmate!</h2>
+    <h2 id="player-2-victory">Player 2 has Checkmate!</h2>
     <script src="source.js"></script>
   </body>
 </html>

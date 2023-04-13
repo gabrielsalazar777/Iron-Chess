@@ -115,16 +115,20 @@ let boardArray = [
 ];
 
 //piece-square occupation array for use in path checking
-let pieceArray = [
-  ["T", "T", "T", "T", "T", "T", "T", "T"],
-  ["T", "T", "T", "T", "T", "T", "T", "T"],
-  ["0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0"],
-  ["0", "0", "0", "0", "0", "0", "0", "0"],
-  ["T", "T", "T", "T", "T", "T", "T", "T"],
-  ["T", "T", "T", "T", "T", "T", "T", "T"],
-];
+let pieceArray;
+
+function initPieceArray() {
+  pieceArray = [
+    ["T", "T", "T", "T", "T", "T", "T", "T"],
+    ["T", "T", "T", "T", "T", "T", "T", "T"],
+    ["0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0"],
+    ["T", "T", "T", "T", "T", "T", "T", "T"],
+    ["T", "T", "T", "T", "T", "T", "T", "T"],
+  ];
+}
 
 let playerTurn;
 
@@ -190,8 +194,11 @@ function initBoard() {
     }
   });
   playerTurn = "light";
+  lightKingParentId = lightKing.parentNode.id;
+  darkKingParentId = darkKing.parentNode.id;
+  initPieceArray();
+  player1Wins, (player2Wins = false);
 }
-initBoard();
 
 function handleMove(type, id, origin, destPieceId, destination) {
   if (
@@ -205,8 +212,7 @@ function handleMove(type, id, origin, destPieceId, destination) {
 }
 
 let yCoordO, xCoordO, yCoordD, xCoordD;
-let lightKingParentId = lightKing.parentNode.id;
-let darkKingParentId = darkKing.parentNode.id;
+let lightKingParentId, darkKingParentId;
 
 function coordinateConversion(origin, destination) {
   boardArray.forEach((elem, i) => {
@@ -228,6 +234,8 @@ function coordinateConversion(origin, destination) {
   });
 }
 
+let player1Wins, player2Wins;
+
 function isCheckOrMate() {
   let lightMate, darkMate;
   let lightCheck, darkCheck;
@@ -247,7 +255,6 @@ function isCheckOrMate() {
           )
         ) {
           darkCheck = true;
-          console.log("DARK IN CHECK");
         }
       }
     });
@@ -267,7 +274,6 @@ function isCheckOrMate() {
           )
         ) {
           lightCheck = true;
-          console.log("LIGHT IN CHECK");
         }
       }
     });
@@ -306,10 +312,10 @@ function isCheckOrMate() {
   }
 
   if (playerTurn === "dark" && lightMate === true) {
-    console.log("WHITE IN CHECKMATE!");
+    player2Wins = true;
   }
   if (playerTurn === "light" && darkMate === true) {
-    console.log("DARK IN CHECKMATE");
+    player1Wins = true;
   }
 }
 
@@ -323,7 +329,6 @@ function avoidFriendlyCheck(id, origin, destination) {
   coordinateConversion(origin, destination);
   currentImages = document.querySelectorAll("img");
 
-  //TEST start testing code here
   //pass correct order of arguments to isLegalMove if destination square empty
   let type = document.getElementById(id).className;
   if (pieceArray[yCoordD][xCoordD] === "0") {
@@ -348,7 +353,6 @@ function avoidFriendlyCheck(id, origin, destination) {
       return 0;
     }
   }
-  //end testing code here
 
   //store original pieceArray to simulate attempted move
   let tempArray = JSON.parse(JSON.stringify(pieceArray));
@@ -364,29 +368,12 @@ function avoidFriendlyCheck(id, origin, destination) {
           legalMove = false;
         }
       }
-
-      //TEST use below if above (430 - 444) doesn't work
-
-      // if (isLegalMove(e.className, e.id, e.parentNode.id, id, destination)) {
-      //   pieceArray = JSON.parse(JSON.stringify(tempArray));
-      //   console.log(
-      //     "428: illegal move, king throws themselves in check: ",
-      //     e.className,
-      //     e.id,
-      //     e.parentNode.id,
-      //     id,
-      //     destination
-      //   );
-      //   legalMove = false;
-      // }
     });
   }
   //stop light piece move from throwing their king in check
   else if (id.includes("light")) {
     currentImages.forEach((e) => {
       if (e.id.includes("dark") && !e.parentNode.id.includes(destination)) {
-        //TEST use line below if line above is breaking stuff
-        // if (e.id.includes("dark")) {
         if (
           isLegalMove(
             e.className,
@@ -405,9 +392,7 @@ function avoidFriendlyCheck(id, origin, destination) {
   //stop dark piece move from throwing their king in check
   else if (id.includes("dark")) {
     currentImages.forEach((e) => {
-      //TEST LINE BELOW
       if (e.id.includes("light") && !e.parentNode.id.includes(destination)) {
-        // if (e.id.includes("light")) {
         if (
           isLegalMove(
             e.className,
@@ -446,9 +431,6 @@ function avoidFriendlyCheck(id, origin, destination) {
 //check if piece is making a legal move
 function isLegalMove(type, id, origin, destPieceId, destination) {
   coordinateConversion(origin, destination);
-
-  // console.log("Origin info: ", type, id, yCoordO, xCoordO, origin);
-  // console.log("Destination info: ", destPieceId, yCoordD, xCoordD, destination);
 
   //handle move based on img class (param named 'type')
   switch (type) {
@@ -737,11 +719,48 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
 
 let board = document.querySelectorAll(".row > div");
 let selectedPiece;
+let startButton = document.getElementById("start-button");
+let restartButton = document.getElementById("restart-button");
+let player1Victory = document.getElementById("player-1-victory");
+let player2Victory = document.getElementById("player-2-victory");
+let gameOn = false;
+
+window.onload = function () {
+  restartButton.style.display = "none";
+  player1Victory.style.display = "none";
+  player2Victory.style.display = "none";
+  startButton.onclick = function () {
+    if (!gameOn) {
+      gameOn = true;
+      console.log("game ON");
+      player1Wins = false;
+      player2Wins = false;
+      initBoard();
+      startButton.style.display = "none";
+      restartButton.style.display = "inline";
+      player1Victory.style.display = "none";
+      player2Victory.style.display = "none";
+      console.log(pieceArray);
+    }
+  };
+  restartButton.onclick = function () {
+    if (gameOn) {
+      gameOn = false;
+      console.log("game OFF");
+      let resetImages = document.querySelectorAll("img");
+      resetImages.forEach((img) => {
+        if (img.id.includes("light") || img.id.includes("dark")) {
+          img.parentNode.removeChild(img);
+        }
+      });
+      startButton.style.display = "inline";
+      restartButton.style.display = "none";
+    }
+  };
+};
 
 board.forEach((elem) => {
   elem.addEventListener("mousedown", (e) => {
-    // board.addEventListener("click", (e) => {
-    // document.addEventListener('click', (e) => {
     if (
       (playerTurn === "light" && e.target.id.includes("light")) ||
       (playerTurn === "dark" && e.target.id.includes("dark"))
@@ -817,6 +836,11 @@ board.forEach((elem) => {
           playerTurn = "light";
         }
       }
+    }
+    if (player1Wins) {
+      player1Victory.style.display = "block";
+    } else if (player2Wins) {
+      player2Victory.style.display = "block";
     }
   });
 });
