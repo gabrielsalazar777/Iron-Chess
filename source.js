@@ -439,6 +439,9 @@ function isLegalMove(type, id, origin, destPieceId, destination) {
       if (Math.abs(xCoordD - xCoordO) >= 2) {
         return 0;
       }
+      if (Math.abs((yCoordD - yCoordO) * (xCoordD - xCoordO)) >= 2) {
+        return 0;
+      }
       //if dark moving towards light
       if (id.includes("dark")) {
         //if moving back or sideways
